@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UserService.Core.Entities;
+using UserService.Core.MessageBroker.Interfaces;
 using UserService.Core.Repositories.Interfaces;
 using UserService.Infrastructure.Commands.User;
 using UserService.Infrastructure.Services.Interfaces;
@@ -12,15 +13,18 @@ namespace UserService.Infrastructure.Services
     {
         private readonly IUserRepository _UserRepository;
         private readonly IMapper _Mapper;
+        private readonly IMessagePublisher _MessagePublisher;
 
-        public UserService(IUserRepository userRepository, IMapper mapper)
+        public UserService(IUserRepository userRepository, IMapper mapper, IMessagePublisher messagePublisher)
         {
             _UserRepository = userRepository;
             _Mapper = mapper;
+            _MessagePublisher = messagePublisher;
         }
 
         public async Task<int> CreateUser(CreateUserCommand createUserCommand)
         {
+            await _MessagePublisher.Publish("gowno");
             return await _UserRepository.CreateUser(_Mapper.Map<CreateUserCommand, User>(createUserCommand));
         }
 

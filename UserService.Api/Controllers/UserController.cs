@@ -24,7 +24,7 @@ namespace UserService.Api.Controllers
             return Ok(await _Mediator.Send(getUserCommand));
         }
 
-        [HttpGet("/api/v1/user/all")]
+        [HttpGet("/api/v1/User/all")]
         public async Task<ActionResult<IEnumerable<User>>> GetUser(GetUsersCommand getUsersCommand)
         {
             return Ok(await _Mediator.Send(getUsersCommand));

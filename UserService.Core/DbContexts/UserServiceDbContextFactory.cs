@@ -12,6 +12,13 @@ namespace UserService.Core.DbContexts
             _UserServiceDbConnectionStringProvider = userServiceDbConnectionStringProvider;
         }
 
+        public UserServiceDbContext Create()
+        {
+            var optionsBuilder = new DbContextOptionsBuilder<UserServiceDbContext>();
+            optionsBuilder.UseNpgsql(_UserServiceDbConnectionStringProvider.Get());
+            return new UserServiceDbContext(optionsBuilder.Options);
+        }
+
         public UserServiceDbContext CreateDbContext()
         {
             var optionsBuilder = new DbContextOptionsBuilder<UserServiceDbContext>();

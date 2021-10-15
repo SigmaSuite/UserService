@@ -3,10 +3,15 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using RabbitMQ.Client.Core.DependencyInjection;
+using RabbitMQ.Client.Core.DependencyInjection.Configuration;
+using System;
 using System.Reflection;
 using UserService.Api.Mapper;
 using UserService.Core.DbContexts;
 using UserService.Core.DbContexts.Interfaces;
+using UserService.Core.MessageBroker;
+using UserService.Core.MessageBroker.Interfaces;
 using UserService.Core.Options;
 using UserService.Core.Repositories;
 using UserService.Core.Repositories.Interfaces;
@@ -47,6 +52,14 @@ namespace UserService.Api.Extensions
 
         public static IServiceCollection SetupCoreServices(this IServiceCollection serviceDescriptors)
         {
+            serviceDescriptors.AddTransient<IMessagePublisher, MessagePublisher>();
+
+            //var configuration = new RabbitMqClientOptions();
+            //serviceDescriptors.AddRabbitMqClient(configuration);
+            //configuration.HostName = "localhost";
+            //configuration.Port = 5672;
+            //Console.Write($"Chuj {configuration.ToString()}");
+
             serviceDescriptors.AddTransient<IUserServiceDbConnectionStringProvider, UserServiceDbConnectionStringProvider>();
             serviceDescriptors.AddTransient<IDbContextFactory<UserServiceDbContext>, UserServiceDbContextFactory>();
             serviceDescriptors.AddTransient<IUserRepository, UserRepository>();
