@@ -13,11 +13,14 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
     ports:
     - "5000:80" 
+    depends_on:
+    - "postgres"
+    restart: on-failure
   rabbitmq: # login guest:guest
     image: rabbitmq:3-management
-    hostname: "rabbitmq"
+    hostname: rabbitmq
     labels:
-      NAME: "rabbitmq"
+      NAME: rabbitmq
     container_name: rabbitmq
     ports:
     - "4369:4369"
@@ -26,9 +29,28 @@ services:
     - "25672:25672"
     - "15671:15671"
     - "15672:15672"
-
     networks:
-      - some-net    
+      - some-net
+  postgres:
+    image: postgres
+    environment:
+      - POSTGRES_USER=test
+      - POSTGRES_PASSWORD=test
+      - POSTGRES_DB=UserServiceDb
+    ports:
+       - 5432:5432
+    networks:
+      - some-net   
+  pgadmin:
+    image: dpage/pgadmin4
+    depends_on:
+      - postgres
+    ports:
+      - "5555:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: pgadmin4@pgadmin.org
+      PGADMIN_DEFAULT_PASSWORD: admin
+    restart: unless-stopped
 networks:
   some-net:
     driver: bridge

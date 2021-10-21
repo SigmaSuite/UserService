@@ -20,5 +20,6 @@ namespace UserService.Core.DbContexts
         {
             modelBuilder.Entity<User>().ToTable("Users", "user");
         }
+
     }
 }

@@ -4,6 +4,6 @@ namespace UserService.Core.MessageBroker.Interfaces
 {
     public interface IMessagePublisher
     {
-        public Task Publish(string message);
+        public void Publish(string message);
     }
 }

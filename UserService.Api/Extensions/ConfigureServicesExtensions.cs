@@ -46,19 +46,32 @@ namespace UserService.Api.Extensions
         {
 
             serviceDescriptors.Configure<DatabaseOptions>(configuration.GetSection(DatabaseOptions.DefaultName));
+            serviceDescriptors.Configure<RabbitMqOptions>(configuration.GetSection(RabbitMqOptions.DefaultName));
 
             return serviceDescriptors;
         }
 
-        public static IServiceCollection SetupCoreServices(this IServiceCollection serviceDescriptors)
+        public static IServiceCollection SetupCoreServices(this IServiceCollection serviceDescriptors, IConfiguration configuration)
         {
             serviceDescriptors.AddTransient<IMessagePublisher, MessagePublisher>();
 
-            //var configuration = new RabbitMqClientOptions();
-            //serviceDescriptors.AddRabbitMqClient(configuration);
-            //configuration.HostName = "localhost";
-            //configuration.Port = 5672;
-            //Console.Write($"Chuj {configuration.ToString()}");
+            var rabbitOptions = new RabbitMqOptions();
+            configuration.GetSection(RabbitMqOptions.DefaultName).Bind(rabbitOptions);
+            var rabbitConfig = new RabbitMqClientOptions();
+            Console.WriteLine($"Hostname : {rabbitOptions.Hostname}");
+            rabbitConfig.HostName = rabbitOptions.Hostname;
+            Console.WriteLine($"Username: {rabbitOptions.Username}");
+
+            rabbitConfig.UserName = rabbitOptions.Username;
+            Console.WriteLine($"Password: {rabbitOptions.Password}");
+
+            rabbitConfig.Password = rabbitOptions.Password;
+            Console.WriteLine($"Port: {rabbitOptions.Port}");
+
+            rabbitConfig.Port = rabbitOptions.Port;
+            rabbitConfig.VirtualHost = rabbitOptions.VirtualHost;
+
+            serviceDescriptors.AddRabbitMqClient(rabbitConfig);
 
             serviceDescriptors.AddTransient<IUserServiceDbConnectionStringProvider, UserServiceDbConnectionStringProvider>();
             serviceDescriptors.AddTransient<IDbContextFactory<UserServiceDbContext>, UserServiceDbContextFactory>();
@@ -71,6 +84,14 @@ namespace UserService.Api.Extensions
         {
 
             serviceDescriptors.AddTransient<IUserService, Infrastructure.Services.UserService>();
+            return serviceDescriptors;
+        }
+
+        public static IServiceCollection ApplyDbMigrations(this IServiceCollection serviceDescriptors, IConfiguration configuration)
+        {
+            //serviceDescriptors.
+
+
             return serviceDescriptors;
         }
     }

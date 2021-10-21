@@ -1,44 +1,33 @@
-﻿using RabbitMQ.Client;
+﻿using Microsoft.Extensions.Options;
 using RabbitMQ.Client.Core.DependencyInjection.Services;
-using System;
-using System.Text;
-using System.Threading.Tasks;
 using UserService.Core.MessageBroker.Interfaces;
+using UserService.Core.Options;
 
 namespace UserService.Core.MessageBroker
 {
     public class MessagePublisher : IMessagePublisher
     {
-        //private readonly IQueueService _QueueService;
+        private readonly IQueueService _QueueService;
+        private readonly RabbitMqOptions rabbitMqOptions;
 
-        //public MessagePublisher(IQueueService queueService)
-        //{
-            //_QueueService = queueService;
-        //}
-
-        public async Task Publish(string message)
+        public MessagePublisher(IQueueService queueService, IOptions<RabbitMqOptions> rabbitMqOptions)
         {
-            Console.WriteLine("Sending message ;]");
+            _QueueService = queueService;
+            this.rabbitMqOptions = rabbitMqOptions.Value;
+        }
 
-            var factory = new ConnectionFactory() { HostName = "rabbitmq" };
-            using (var connection = factory.CreateConnection())
-            using (var channel = connection.CreateModel())
-            {
-                channel.QueueDeclare(queue: "hello",
-                                 durable: false,
-                                 exclusive: false,
-                                 autoDelete: false,
-                                 arguments: null);
+        public void Publish(string message)
+        {
+            //_QueueService.Channel.ExchangeDeclare(rabbitMqOptions.Exchange, )
 
-                var body = Encoding.UTF8.GetBytes(message);
 
-                channel.BasicPublish(exchange: "default",
-                                     routingKey: "defaultqueueroutingkey",
-                                     basicProperties: null,
-                                     body: body);
-                Console.WriteLine(" [x] Sent {0}", message);
+            _QueueService.Channel.QueueDeclare("test", false, false, false, null);
+            _QueueService.Channel.BasicPublish("", "test", false, null, System.Text.Encoding.UTF8.GetBytes(message));
+        }
 
-            }
+        private void SetupExchange()
+        {
+            _QueueService.Channel.ExchangeDeclare(rabbitMqOptions.ExchangeOptions.Name, rabbitMqOptions.ExchangeOptions.ExchangeType.ToString(), rabbitMqOptions.ExchangeOptions.Durability, rabbitMqOptions.ExchangeOptions.AutoDelete, null);
         }
     }
 }

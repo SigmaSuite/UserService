@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using UserService.Api.Extensions;
+using UserService.Core.DbContexts;
 
 namespace UserService
 {
@@ -23,9 +25,9 @@ namespace UserService
             services.SetupAutoMapper();
             services.SetupInfrastructureServices();
             services.SetupOptions(Configuration);
-            services.SetupCoreServices();
+            services.SetupCoreServices(Configuration);
             services.RegisterHandlers();
-
+            services.AddDbContext<UserServiceDbContext>();
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -41,6 +43,13 @@ namespace UserService
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "UserService v1"));
+            
+            }
+
+            using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                var context = serviceScope.ServiceProvider.GetService<IDbContextFactory<UserServiceDbContext>>();
+                context.CreateDbContext().Database.Migrate();
             }
 
 

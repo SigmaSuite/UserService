@@ -24,7 +24,7 @@ namespace UserService.Infrastructure.Services
 
         public async Task<int> CreateUser(CreateUserCommand createUserCommand)
         {
-            await _MessagePublisher.Publish("gowno");
+            _MessagePublisher.Publish("CreatingUser");
             return await _UserRepository.CreateUser(_Mapper.Map<CreateUserCommand, User>(createUserCommand));
         }
 

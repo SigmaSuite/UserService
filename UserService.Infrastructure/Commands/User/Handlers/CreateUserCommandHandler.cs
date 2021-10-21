@@ -20,3 +20,4 @@ namespace UserService.Infrastructure.Commands.User.Handlers
         }
     }
 }
+    
