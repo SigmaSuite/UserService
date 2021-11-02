@@ -1,9 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using UserService.Core.Enums;
 
 namespace UserService.Core.MessageBroker.Interfaces
 {
     public interface IMessagePublisher
     {
-        public void Publish(string message);
+        public void Publish(Message message);
     }
 }

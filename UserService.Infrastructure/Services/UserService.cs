@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UserService.Core.Entities;
+using UserService.Core.Helpers;
 using UserService.Core.MessageBroker.Interfaces;
 using UserService.Core.Repositories.Interfaces;
 using UserService.Infrastructure.Commands.User;
@@ -24,13 +25,17 @@ namespace UserService.Infrastructure.Services
 
         public async Task<int> CreateUser(CreateUserCommand createUserCommand)
         {
-            _MessagePublisher.Publish("CreatingUser");
-            return await _UserRepository.CreateUser(_Mapper.Map<CreateUserCommand, User>(createUserCommand));
+            var userToAdd = _Mapper.Map<CreateUserCommand, User>(createUserCommand);
+            var userId = await _UserRepository.CreateUser(userToAdd);
+            _MessagePublisher.Publish(new Core.MessageBroker.Message(userToAdd.ToString(), MessageTypes.Created));
+            return userId;
         }
 
         public async Task DeleteUser(DeleteUserCommand deleteUserCommand)
         {
+            
             await _UserRepository.DeleteUser(deleteUserCommand.UserId);
+            _MessagePublisher.Publish(new Core.MessageBroker.Message($"{deleteUserCommand.UserId}", MessageTypes.Deleted));
         }
 
         public async Task<User> GetUser(GetUserCommand getUserCommand)
@@ -41,6 +46,13 @@ namespace UserService.Infrastructure.Services
         public async Task<IEnumerable<User>> GetUsers(GetUsersCommand getUsersCommand)
         {
             return await _UserRepository.GetUsers();
+        }
+
+        public async Task UpdateUser(UpdateUserCommand updateUserCommand)
+        {
+            var userUpdatedData = new User() { Name = updateUserCommand.Name, Id = updateUserCommand.UserId };
+            await _UserRepository.UpdateUser(updateUserCommand.UserId, userUpdatedData);
+            _MessagePublisher.Publish(new Core.MessageBroker.Message(userUpdatedData.ToString(), MessageTypes.Updated));
         }
     }
 }

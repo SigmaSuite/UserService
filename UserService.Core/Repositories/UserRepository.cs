@@ -47,5 +47,15 @@ namespace UserService.Core.Repositories
             using (var context = _DbContextFactory.CreateDbContext())
                 return await context.Users.ToListAsync();
         }
+
+        public async Task UpdateUser(int userId, User userData)
+        {
+            using(var context = _DbContextFactory.CreateDbContext())
+            {
+                var userToUpdate = await context.Users.FirstOrDefaultAsync(x => x.Id == userId);
+                userToUpdate = userData;
+                await context.SaveChangesAsync();
+            }
+        }
     }
 }

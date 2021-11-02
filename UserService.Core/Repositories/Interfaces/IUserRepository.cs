@@ -10,5 +10,6 @@ namespace UserService.Core.Repositories.Interfaces
         public Task DeleteUser(int userId);
         public Task<IEnumerable<User>> GetUsers();
         public Task<int> CreateUser(User userToCreate);
+        public Task UpdateUser(int userId, User userData);
     }
 }

@@ -69,7 +69,9 @@ namespace UserService.Api.Extensions
             Console.WriteLine($"Port: {rabbitOptions.Port}");
 
             rabbitConfig.Port = rabbitOptions.Port;
-            rabbitConfig.VirtualHost = rabbitOptions.VirtualHost;
+            Console.WriteLine($"WirtualHost: {rabbitOptions.ExchangeOptions.VirtualHost}"); 
+
+            rabbitConfig.VirtualHost = rabbitOptions.ExchangeOptions.VirtualHost;
 
             serviceDescriptors.AddRabbitMqClient(rabbitConfig);
 

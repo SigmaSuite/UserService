@@ -9,6 +9,7 @@
         public string Username { get; set; }
         public string Password { get; set; }
         public ExchangeOptions ExchangeOptions { get; set; }
+        public DefaultQueueOptions DefaultQueueOptions { get; set; }
 
     }
 }
